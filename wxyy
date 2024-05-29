@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交互页面示例</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 300px;
+            margin: 20px auto;
+        }
+        .item {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .send-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .send-box input {
+            width: calc(100% - 20px);
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .send-box select {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .send-box button {
+            width: 100%;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="response-container"></div>
+        <div class="send-box">
+            <input type="text" id="send-input" placeholder="输入问题">
+            <select id="model-select">
+                <option value="model1">模型1</option>
+                <option value="model2">模型2</option>
+                <option value="model3">模型3</option>
+            </select>
+            <button onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById('send-input');
+            const modelSelect = document.getElementById('model-select');
+            const message = input.value;
+            const selectedModel = modelSelect.value;
+
+            // 清空输入框
+            input.value = '';
+
+            // 模拟发送请求到后端
+            fetch('/api/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message, model: selectedModel })
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResponse(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function displayResponse(data) {
+            const container = document.getElementById('response-container');
+            container.innerHTML = '';  // 清空之前的内容
+
+            data.responses.forEach(response => {
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.textContent = response;
+                container.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>
