@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>交互页面示例</title>
+    <title>模拟 ChatGPT 对话框</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #eef2f3;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
             margin: 0;
             padding: 0;
             display: flex;
@@ -15,109 +15,109 @@
             align-items: center;
             height: 100vh;
         }
-        .container {
+        .chat-container {
+            width: 80%;
+            max-width: 600px;
             background-color: #fff;
-            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .chat-body {
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            animation: fadeIn 1s;
+            max-height: 400px;
+            overflow-y: auto;
         }
-        .item {
-            background-color: #f7f9fc;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            word-wrap: break-word;
-            border: 1px solid #e1e8ed;
-            transition: transform 0.2s;
-        }
-        .item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .send-box {
+        .chat-message {
+            margin-bottom: 10px;
             display: flex;
-            flex-direction: column;
             align-items: flex-start;
-            width: 100%;
         }
-        .send-box input, .send-box select, .send-box button {
+        .chat-message.user .message-content {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+        }
+        .chat-message.assistant .message-content {
+            background-color: #e2e3e5;
+        }
+        .message-content {
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .chat-input {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input textarea {
             width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-        .send-box button {
-            background-color: #007BFF;
-            color: white;
             border: none;
+            resize: none;
+        }
+        .chat-input button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .send-box button:hover {
-            background-color: #0056b3;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="response-container"></div>
-        <div class="send-box">
-            <input type="text" id="send-input" placeholder="输入问题">
-            <select id="model-select">
-                <option value="model1">模型1</option>
-                <option value="model2">模型2</option>
-                <option value="model3">模型3</option>
-            </select>
-            <button onclick="sendMessage()">发送</button>
+
+<div class="chat-container">
+    <div class="chat-header">
+        模拟 ChatGPT
+    </div>
+    <div class="chat-body" id="chat-body">
+        <div class="chat-message user">
+            <div class="message-content">你好，ChatGPT！</div>
+        </div>
+        <div class="chat-message assistant">
+            <div class="message-content">你好！有什么我可以帮助你的吗？</div>
         </div>
     </div>
+    <div class="chat-input">
+        <textarea id="user-input" rows="2" placeholder="输入你的消息..."></textarea>
+        <button onclick="sendMessage()">发送</button>
+    </div>
+</div>
 
-    <script>
-        function sendMessage() {
-            const input = document.getElementById('send-input');
-            const modelSelect = document.getElementById('model-select');
-            const message = input.value;
-            const selectedModel = modelSelect.value;
+<script>
+    function sendMessage() {
+        const userInput = document.getElementById('user-input');
+        const message = userInput.value.trim();
+        if (message) {
+            const chatBody = document.getElementById('chat-body');
 
-            // 清空输入框
-            input.value = '';
+            // User message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message user';
+            userMessage.innerHTML = `<div class="message-content">${message}</div>`;
+            chatBody.appendChild(userMessage);
 
-            // 模拟发送请求到后端
-            fetch('/api/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: message, model: selectedModel })
-            })
-            .then(response => response.json())
-            .then(data => {
-                displayResponse(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            // Simulate ChatGPT response
+            const assistantMessage = document.createElement('div');
+            assistantMessage.className = 'chat-message assistant';
+            assistantMessage.innerHTML = `<div class="message-content">这是一个自动回复示例。</div>`;
+            chatBody.appendChild(assistantMessage);
+
+            // Scroll to the bottom
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            // Clear input
+            userInput.value = '';
         }
+    }
+</script>
 
-        function displayResponse(data) {
-            const container = document.getElementById('response-container');
-            container.innerHTML = '';  // 清空之前的内容
-
-            data.responses.forEach(response => {
-                const item = document.createElement('div');
-                item.className = 'item';
-                item.textContent = response;
-                container.appendChild(item);
-            });
-        }
-    </script>
 </body>
 </html>
